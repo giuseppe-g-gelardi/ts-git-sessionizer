@@ -1,5 +1,4 @@
 import * as fs from 'fs';
-// import { Continue } from './cli';
 
 type UserProfile = {
   access_token: string;
@@ -69,12 +68,9 @@ export class ConfigManager {
   async revalidateConfig() {
     setTimeout(async () => {
       const updatedConfig = this.getConfig();
-
       if (updatedConfig.user_profile.access_token === "") {
         this.getConfig(); throw new Error('Unable to update or verify config');
       }
-
-      // await Continue();
     }, 2000);
   }
 }
