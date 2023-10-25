@@ -6,9 +6,9 @@ type UserProfile = {
   github_username: string;
 };
 
-type Editor = {
+export type Editor = {
   name: string; // "vscode" | "vim" | "nvim";
-  alias: string;
+  alias: string | boolean;
   tmux: boolean;
 };
 

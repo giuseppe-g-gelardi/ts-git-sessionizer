@@ -1,5 +1,5 @@
 import { spawn } from "child_process";
-import { ConfigManager, UserConfig } from "./config";
+import { ConfigManager, type UserConfig } from "./config";
 import { authorizationWithGithub } from "./server";
 import { Continue } from "./cli";
 
