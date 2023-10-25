@@ -1,46 +1,48 @@
-// import { ConfigManager} from "./config";
-// import { Authenticate } from "./authenticate";
-//
+import { ConfigManager, UserConfig } from "./config";
+import { Authenticate } from "./authenticate";
+import { Exit } from "./exit";
+import { configureEditorOptions } from "./cli/editor_options";
+
 import select, { Separator } from '@inquirer/select'
 import input from '@inquirer/input'
 
-// import axios from 'axios'
+import axios from 'axios'
 import { type Editor } from './config'
 
 (async function main() {
-  // const cm = new ConfigManager()
-  // const config = cm.getConfig()
-  //
-  // Authenticate(config, cm)
+  const cm = new ConfigManager()
+  const config = cm.getConfig()
 
-  // const repos = await getRepos()
-  // const repoList: Array<string> = repos.repos.map((repo: { name: string }) => repo.name)
-  // const transformData = repoList.map((repo: string) => ({
-  //   name: repo,
-  //   value: repo,
-  //   description: repo
-  // }))
+  await Authenticate(config, cm)
 
-  // repoTestListOptions(transformData)
-  // const editorOptions = [
-  //   'vim', 'neovim', 'vscode'
-  // ].map((editor: string) => ({
-  //   name: editor,
-  //   value: editor,
-  //   description: editor
-  // }))
-  // const cfg = configureEditor(editorOptions)
-  // process.stdout.write(JSON.stringify(cfg))
-
-  await Welcome()
-
+  await Welcome(config)
 })()
 
 
-async function Welcome() {
+// ! ********************************************************************* ! //
+//                                                                           //
+// ! ********************************************************************* ! //
 
-  const letsGO = await select({
-    message: 'Welcome back! What would you like to do?',
+
+async function RepoSelection(options: Array<OptionsType>): Promise<string> {
+  const answer = await select({
+    message: 'Select a repo',
+    pageSize: 8,
+    loop: true,
+    choices: options,
+  })
+  console.log({
+    message: 'hey from repoTestListOptions',
+    answer: answer
+  })
+  return answer
+}
+
+
+export async function Welcome(config: UserConfig) {
+
+  const welcomeDialog = await select({
+    message: 'Welcome! What would you like to do?',
     choices: [
       {
         name: 'Open a repo', // -> lets get started
@@ -51,35 +53,46 @@ async function Welcome() {
         name: 'Update my config',
         value: 'update',
         description: 'Update my configuration options'
+      },
+      {
+        name: 'Exit',
+        value: 'exit',
+        description: 'Exit the program'
       }
     ]
   })
 
-  if (letsGO === 'open') {
-    // const repos = await getRepos()
-    // const repoList: Array<string> = repos.repos.map((repo: { name: string }) => repo.name)
-    // const transformData = repoList.map((repo: string) => ({
-    //   name: repo,
-    //   value: repo,
-    //   description: repo
-    // }))
-    // repoTestListOptions(transformData)
+  if (welcomeDialog === 'open') {
+    const repos = await getRepos(config.user_profile.access_token)
+    await RepoSelection(repos)
     console.info({
       message: 'hey from open'
     })
-  } else if (letsGO === 'update') {
-    const editorOptions = [
-      'vim', 'neovim', 'vscode'
-    ].map((editor: string) => ({
-      name: editor,
-      value: editor,
-      description: editor
-    }))
-    const cfg = await configureEditor(editorOptions)
+  } else if (welcomeDialog === 'update') {
+    const cfg = await configureEditor()
     console.log(cfg)
+  } else if (welcomeDialog === 'exit') {
+    Exit()
   }
-
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 type OptionsType = {
   name: string,
@@ -87,23 +100,21 @@ type OptionsType = {
   description: string
 }
 
-// async function repoTestListOptions(options: Array<OptionsType>): Promise<string> {
-//   const answer = await select({
-//     message: 'Select a repo',
-//     pageSize: 8,
-//     loop: true,
-//     choices: options,
-//   })
-//   return answer
-// }
+type PartialRepo = {
+  name: string,
+  html_url: string,
+  description: string
+}
 
+// const editorCfg = await configureEditorOptions(editorOpts)
 
-async function configureEditor(options: Array<OptionsType>): Promise<Editor> {
+async function configureEditor(): Promise<Editor> {
   let alias = "" as string | boolean // probably should just make it a string type and parse it to boolean if the answer is no/false
-  const editor_answer = await select({
-    message: 'Select your preferred editor',
-    choices: options
-  })
+  // const editor_answer = await select({
+  //   message: 'Select your preferred editor',
+  //   choices: options
+  // })
+const editor_answer =  await configureEditorOptions()
   new Separator()
   const uses_alias = await select({
     message: 'Do you open your editor with an alias?',
@@ -122,9 +133,7 @@ async function configureEditor(options: Array<OptionsType>): Promise<Editor> {
   if (uses_alias === true) {
     alias = await input({
       message: 'What is your editors alias?',
-
-      // add a followup question to show what they typed and ask if its correct
-    })
+    }) // add a followup question to show what they typed and ask if its correct
   } else if (uses_alias === false) {
     alias = false
   }
@@ -142,12 +151,6 @@ async function configureEditor(options: Array<OptionsType>): Promise<Editor> {
     }]
   })
 
-
-  console.log({
-    name: editor_answer,
-    alias: alias,
-    tmux: tmux_answer
-  })
   return {
     name: editor_answer,
     alias: alias,
@@ -157,9 +160,28 @@ async function configureEditor(options: Array<OptionsType>): Promise<Editor> {
 
 
 
-// async function getRepos() {
-//   const userResponse = await axios.get('https://api.github.com/user', { headers: { Authorization: `token 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` } })
-//   const repos = await axios.get(userResponse.data.repos_url, { headers: { Authorization: `token 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` } })
-//   return { repos: repos.data }
-// }
+
+
+// ! ********************************************************************* ! //
+//                                                                           //
+// ! ********************************************************************* ! //
+
+
+async function getRepos(token: string): Promise<Array<OptionsType>> {
+  const userResponse = await axios.get('https://api.github.com/user', {
+    headers: { Authorization: `token ${token}` }
+  })
+  const repoResponse = await axios.get(userResponse.data.repos_url, {
+    headers: { Authorization: `token ${token}` }
+  })
+
+  const repository_list = repoResponse.data.map((r: PartialRepo) => ({
+    name: r.name,
+    value: r.html_url,
+    description: r.description
+  }))
+
+  return repository_list
+}
+
 

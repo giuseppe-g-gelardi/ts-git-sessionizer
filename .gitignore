@@ -7,3 +7,5 @@
 .env.*
 
 .configrc
+
+/src/*.json

@@ -1,5 +1,5 @@
 import * as fs from 'fs';
-import { Continue } from './cli';
+// import { Continue } from './cli';
 
 type UserProfile = {
   access_token: string;
@@ -17,6 +17,7 @@ export interface UserConfig {
   editor: Editor;
   dependencies: boolean;
 }
+
 
 export class ConfigManager {
   private configFileName = '.configrc';
@@ -73,9 +74,10 @@ export class ConfigManager {
         this.getConfig(); throw new Error('Unable to update or verify config');
       }
 
-      await Continue();
+      // await Continue();
     }, 2000);
   }
 }
+
 
 
