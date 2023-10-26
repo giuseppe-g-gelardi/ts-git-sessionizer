@@ -2,6 +2,7 @@ import axios from 'axios'
 
 import ora from 'ora'
 import { select } from "@inquirer/prompts"
+import { gitClone } from '../helpers/git_clone'
 
 type PartialRepo = {
   name: string,
@@ -19,7 +20,7 @@ type OptionsType = {
 // between https and ssh
 
 async function fetchGithubRepos(token: string): Promise<Array<OptionsType>> {
-  const spinner = ora('Fetching repositories...').start()
+  const spinner = ora('Fetching your repositories...').start()
 
   try {
 
@@ -45,7 +46,7 @@ async function fetchGithubRepos(token: string): Promise<Array<OptionsType>> {
   }
 }
 
-export async function repoSelection(token: string): Promise<string> {
+export async function repoSelection(token: string): Promise<void> {
   const github_repos = await fetchGithubRepos(token)
   const answer = await select({
     message: 'Select a repository',
@@ -53,5 +54,14 @@ export async function repoSelection(token: string): Promise<string> {
     loop: true,
     choices: github_repos,
   })
-  return answer
+
+  const spinner = ora('Cloning repository...').start()
+  try {
+    await gitClone(answer)
+    spinner.succeed('Repository cloned successfully!')
+  } catch (error) {
+    spinner.fail('Failed to clone repository!')
+    console.log(error)
+    process.exit(1)
+  }
 }
