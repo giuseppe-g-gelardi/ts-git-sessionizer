@@ -7,3 +7,7 @@
 .env.*
 
 .configrc
+
+/src/*.json
+
+.deprecated

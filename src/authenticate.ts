@@ -1,7 +1,6 @@
 import { spawn } from "child_process";
-import { ConfigManager, UserConfig } from "./config";
+import { ConfigManager, type UserConfig } from "./config";
 import { authorizationWithGithub } from "./server";
-import { Continue } from "./cli";
 
 export async function Authenticate(config: UserConfig, cm: ConfigManager): Promise<void> {
   if (config.user_profile.access_token === "") {
@@ -10,8 +9,7 @@ export async function Authenticate(config: UserConfig, cm: ConfigManager): Promi
     serverProcess.on('exit', (code, signal) => (code && signal))
     await cm.revalidateConfig()
   } else {
-    console.log({ message: "user verified", config })
-    await Continue()
+    process.stdout.write("verified\n")
   }
 }
 

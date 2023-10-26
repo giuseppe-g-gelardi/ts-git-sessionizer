@@ -1,14 +1,13 @@
 import * as fs from 'fs';
-import { Continue } from './cli';
 
 type UserProfile = {
   access_token: string;
   github_username: string;
 };
 
-type Editor = {
+export type Editor = {
   name: string; // "vscode" | "vim" | "nvim";
-  alias: string;
+  alias: string | boolean;
   tmux: boolean;
 };
 
@@ -17,6 +16,7 @@ export interface UserConfig {
   editor: Editor;
   dependencies: boolean;
 }
+
 
 export class ConfigManager {
   private configFileName = '.configrc';
@@ -68,14 +68,12 @@ export class ConfigManager {
   async revalidateConfig() {
     setTimeout(async () => {
       const updatedConfig = this.getConfig();
-
       if (updatedConfig.user_profile.access_token === "") {
         this.getConfig(); throw new Error('Unable to update or verify config');
       }
-
-      await Continue();
     }, 2000);
   }
 }
+
 
 
