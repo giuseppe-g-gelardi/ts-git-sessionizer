@@ -7,6 +7,8 @@
 ## should add ssh_url to the options and prompt the user to choose 
  - between https and ssh
 
+## open terminal based on OS
+ - process.platform === 'darwin' || 'linux' || 'win32'
 
 get cfg
 
