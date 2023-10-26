@@ -1,5 +1,6 @@
 
 import { spawn } from 'child_process'
+import { parse } from 'url'
 
 import ora from 'ora'
 import axios from 'axios'
@@ -26,10 +27,15 @@ export async function repoSelection(token: string): Promise<void> {
     choices: github_repos,
   })
 
-  const spinner = ora('Cloning repository...').start()
+  const spinner = ora('Cloning repository...\n').start()
   try {
+    const repoUrl = answer
     await gitClone(answer)
+
+    const repoName = getRepoNameFromUrl(repoUrl)
+    await changeWorkingDirectory(repoName)
     spinner.succeed('Repository cloned successfully!')
+    
   } catch (error) {
     spinner.fail('Failed to clone repository!')
     console.log(error)
@@ -37,16 +43,21 @@ export async function repoSelection(token: string): Promise<void> {
   }
 }
 
+function getRepoNameFromUrl(url: string): string {
+  const parsedUrl = parse(url)
+  const pathname = parsedUrl.pathname || ''
+  const pathParts = pathname.replace(/^\/|\/$/g, '').split('/');
+  const repoName = pathParts[pathParts.length - 1];
+  return repoName
+}
+
 async function fetchGithubRepos(token: string): Promise<Array<OptionsType>> {
   const spinner = ora('Fetching your repositories...').start()
+  const headers = { Authorization: `token ${token}` }
 
   try {
-    const userResponse = await axios.get('https://api.github.com/user', {
-      headers: { Authorization: `token ${token}` }
-    })
-    const repoResponse = await axios.get(userResponse.data.repos_url, {
-      headers: { Authorization: `token ${token}` }
-    })
+    const userResponse = await axios.get('https://api.github.com/user', { headers })
+    const repoResponse = await axios.get(userResponse.data.repos_url, { headers})
 
     const repository_list = repoResponse.data.map((r: PartialRepo) => ({
       name: r.name,
@@ -67,13 +78,8 @@ async function fetchGithubRepos(token: string): Promise<Array<OptionsType>> {
 async function gitClone(repo_url: string) {
   const gitProcess = spawn('git', ['clone', repo_url])
 
-  gitProcess.stdout.on('data', (data) => {
-    console.log(`stdout: ${data}`)
-  })
-
-  gitProcess.stderr.on('data', (data) => {
-    console.log(`stderr: ${data}`)
-  })
+  gitProcess.stdout.on('data', (data) => console.log(`stdout: ${data}`))
+  gitProcess.stderr.on('data', (data) => console.log(`stderr: ${data}`))
 
   return new Promise<void>((resolve, reject) => {
     gitProcess.on('close', (code) => {
@@ -85,5 +91,21 @@ async function gitClone(repo_url: string) {
         reject()
       }
     })
+  })
+}
+
+async function changeWorkingDirectory(dir: string): Promise<void> {
+
+  console.info(`Changing working directory to ${dir}`)
+
+  return new Promise<void>((resolve, reject) => {
+    try {
+      process.chdir(`./${dir}`)
+      console.log(`Changed working directory to ${dir}`)
+      resolve()
+    } catch (error) {
+      console.log(error)
+      reject()
+    }
   })
 }
