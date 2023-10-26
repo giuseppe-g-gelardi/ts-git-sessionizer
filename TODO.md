@@ -1,6 +1,8 @@
 ## make a back button
 
-
+## github only sends like 20 repos at a time, 
+## need to make a way to get all of them 
+## or an options to get more/search/filter
 -- 
 
 

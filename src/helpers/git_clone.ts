@@ -1,8 +1,6 @@
 
 import { spawn } from 'child_process'
 
-import ora from "ora"
-
 export async function gitClone(repo_url: string) {
   const gitProcess = spawn('git', ['clone', repo_url])
 
@@ -26,20 +24,5 @@ export async function gitClone(repo_url: string) {
     })
   })
 }
-
-// export async function gitClone(repo: string) {
-//   const spinner = ora('Cloning repository...').start()
-//   try {
-//     setTimeout(() => {
-//       spinner.succeed('Repository cloned successfully!')
-//       console.log('git clone', repo)
-//     }, 3000)
-//   } catch (error) {
-//     spinner.fail('Failed to clone repository!')
-//     console.log(error)
-//     process.exit(1)
-//   }
-// }
-
 
 
