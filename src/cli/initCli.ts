@@ -1,17 +1,16 @@
-import { type UserConfig, ConfigManager } from "../config"
-import { Exit } from "../exit"
-import { WelcomeDialog, repoSelection, configureEditor } from './'
-
+import { type UserConfig, ConfigManager } from "../ConfigManager"
+import { exit } from "../utils"
+import { welcomeDialog, repoSelection, configureEditor } from './'
 
 export async function initCli(config: UserConfig, cm: ConfigManager) {
   console.clear()
-  const welcomeDialog = await WelcomeDialog()
+  const welcome = await welcomeDialog()
 
-  if (welcomeDialog === 'open') {
+  if (welcome === 'open') {
     await repoSelection(config.user_profile.access_token)
-  } else if (welcomeDialog === 'update') {
+  } else if (welcome === 'update') {
     await configureEditor(cm)
-  } else if (welcomeDialog === 'exit') {
-    Exit()
+  } else if (welcome === 'exit') {
+    exit()
   }
 }

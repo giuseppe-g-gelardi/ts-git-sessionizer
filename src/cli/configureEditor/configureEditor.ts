@@ -1,6 +1,6 @@
 
-import { ConfigManager } from "../config"
-import { configureEditorOptions, configureAliasOptions, configureTmuxOptions, initCli } from "./"
+import { ConfigManager } from "../../ConfigManager"
+import { configureEditorOptions, configureAliasOptions, configureTmuxOptions, initCli } from ".."
 
 import select, { Separator } from "@inquirer/select"
 

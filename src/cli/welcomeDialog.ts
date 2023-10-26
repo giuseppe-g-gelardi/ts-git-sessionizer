@@ -4,7 +4,7 @@ import { select } from "@inquirer/prompts"
 
 type WelcomeDialogOptions = "open" | "update" | "exit"
 
-export async function WelcomeDialog(): Promise<WelcomeDialogOptions> {
+export async function welcomeDialog(): Promise<WelcomeDialogOptions> {
   return await select({
     message: 'Welcome! What would you like to do?',
     choices: [
