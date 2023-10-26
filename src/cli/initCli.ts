@@ -4,6 +4,7 @@ import { WelcomeDialog, repoSelection, configureEditor } from './'
 
 
 export async function initCli(config: UserConfig, cm: ConfigManager) {
+  console.clear()
   const welcomeDialog = await WelcomeDialog()
 
   if (welcomeDialog === 'open') {

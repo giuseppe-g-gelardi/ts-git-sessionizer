@@ -38,13 +38,11 @@ export async function authorizationWithGithub(cm: ConfigManager): Promise<void> 
           params: { client_id: clientId, client_secret: clientSecret, code, },
           headers: { Accept: 'application/json', },
         });
-
         const accessToken = response.data.access_token;
 
         const userResponse = await axios.get('https://api.github.com/user', {
           headers: { Authorization: `token ${accessToken}`, } // need to first get the accessToken to query for the user and subsequent details
         })
-
         const username = userResponse.data.login // const repos = userResponse.data.repos_url // well get the repos later
 
         res.send('Authorization successful. You can close this window.');
