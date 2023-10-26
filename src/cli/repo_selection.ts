@@ -13,6 +13,9 @@ type OptionsType = {
   description: string
 }
 
+// should add ssh_url to the options and prompt the user to choose 
+// between https and ssh
+
 
 async function fetchGithubRepos(token: string): Promise<Array<OptionsType>> {
   const userResponse = await axios.get('https://api.github.com/user', {

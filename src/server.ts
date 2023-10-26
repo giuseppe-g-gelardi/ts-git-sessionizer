@@ -49,9 +49,13 @@ export async function authorizationWithGithub(cm: ConfigManager): Promise<void> 
 
         res.send('Authorization successful. You can close this window.');
 
-        cm.writeConfig({ // then we should call initialConfigCheck() again to verify that the access_token is no longer empty
-          ...cm.defaultConfig, user_profile: {
-            ...cm.defaultConfig.user_profile,
+        // first get the config, 
+        // then write the config with the new access token and username
+        // otherwise the config will be overwritten with the default values
+        const cfg = cm.getConfig()
+        cm.writeConfig({
+          ...cfg, user_profile: {
+            ...cfg.user_profile,
             access_token: accessToken, github_username: username
           }
         } as UserConfig)

@@ -8,7 +8,7 @@ import { initCli } from './cli'
 
   await Authenticate(config, cm)
 
-  await initCli(config)
+  await initCli(config, cm)
 })()
 
 // ! ********************************************************************* ! //
