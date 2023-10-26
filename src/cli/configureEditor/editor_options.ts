@@ -1,4 +1,4 @@
-import { rando } from '../helpers/rando'
+import { rando } from '../../utils'
 
 import { select } from "@inquirer/prompts"
 

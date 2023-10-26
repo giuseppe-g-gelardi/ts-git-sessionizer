@@ -1,5 +1,5 @@
 import { Continue } from '../src/cli';
-import { ConfigManager, UserConfig } from '../src/config';
+import { ConfigManager, UserConfig } from '../src/ConfigManager';
 
 describe('ConfigManager', () => {
   describe('getConfig', () => {
@@ -115,7 +115,7 @@ describe('ConfigManager', () => {
 
   //     expect(configManager.getConfig).toHaveBeenCalledTimes(2);
 
-      
+
   //     expect(Continue).toHaveBeenCalled();
 
   //   });
