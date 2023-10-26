@@ -15,7 +15,7 @@
 //                                                                           //
 // ! ********************************************************************* ! //
 
-import { spawn } from 'child_process';
+import { exec, spawn } from 'child_process';
 
 async function changeWorkingDirectory(dir: string): Promise<void> {
   console.info(`Current working directory is ${process.cwd()}`)
@@ -41,22 +41,83 @@ async function changeWorkingDirectory(dir: string): Promise<void> {
   });
 }
 
+
+async function openEditor() {
+  // const command = 'ls -l';
+  // const command = 'code .';
+  const command = 'nvim .';
+  // const command = 'tmux new-session -d -s mysession';
+  // const command = `nvim ${__dirname}/test}`
+
+  // Execute the command
+  // exec(command, (error, stdout, stderr) => {
+  //   if (error) {
+  //     console.error(`Error: ${error}`);
+  //     return;
+  //   }
+
+  //   console.log('Command output:');
+  //   console.log(stdout);
+
+  //   if (stderr) {
+  //     console.error(`Errors: ${stderr}`);
+  //   }
+
+  // });
+
+  const terminal = spawn(command, { shell: true, stdio: 'inherit' });
+
+  terminal.on('error', (error) => {
+    console.error(`Error: ${error}`);
+  })
+
+  terminal.on('exit', (code) => {
+    if (code === 0) {
+      console.log('Command executed successfully!');
+    } else {
+      console.error(`Command exited with code ${code}`);
+    }
+  })
+}
+
 (async function main() {
   console.log('Current working directory is: ', process.cwd())
+
   try {
     process.chdir(`tests`)
     console.log('updated working directory is: ', process.cwd())
+    await openEditor()
     // process.chdir(`${__dirname}/test`)
   } catch (error) {
     console.error("error occured while " + "changing directory: " + error);
-
   }
-  // try {
-  //   // await changeWorkingDirectory('tests');
-  // } catch (error) {
-  //   console.error('Error:', error);
-  // }
+  try {
+    // await changeWorkingDirectory('tests');
+  } catch (error) {
+    console.error('Error:', error);
+  }
 })();
+
+
+async function openCodeEditor() {
+  // const command = 'code .';
+  const command = 'nvim .';
+  // const command = 'tmux new-session -d -s mysession';
+
+  const terminal = spawn(command, { shell: true, stdio: 'inherit' });
+
+  terminal.on('error', (error) => {
+    console.error(`Error: ${error}`);
+  })
+
+  terminal.on('exit', (code) => {
+    if (code === 0) {
+      console.log('Command executed successfully!');
+    } else {
+      console.error(`Command exited with code ${code}`);
+    }
+  })
+}
 
 
 
