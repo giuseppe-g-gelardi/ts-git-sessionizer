@@ -27,23 +27,32 @@ export async function repoSelection(token: string): Promise<void> {
     loop: true,
     choices: github_repos,
   })
+  const repoName = getRepoNameFromUrl(answer)
+  // const spinner = ora('Cloning repository...\n').start()
 
-  const spinner = ora('Cloning repository...\n').start()
+  // const repoUrl = answer
+
+  const spinner = ora().start()
   try {
-    const repoUrl = answer
+
+    // setTimeout(() => {
+    //   spinner.text = 'Cloning repository...'
+    // }, 2000)
     await gitClone(answer)
-
-    const repoName = getRepoNameFromUrl(repoUrl)
-    await changeWorkingDirectory(repoName)
-
     spinner.succeed('Repository cloned successfully!')
-    await openCodeEditor()
+
+
 
   } catch (error) {
     spinner.fail('Failed to clone repository!')
     console.log(error)
     process.exit(1)
   }
+
+  setTimeout(async () => {
+    await changeWorkingDirectory(repoName)
+    await openCodeEditor()
+  }, 2000)
 }
 
 function getRepoNameFromUrl(url: string): string {
@@ -78,16 +87,16 @@ async function fetchGithubRepos(token: string): Promise<Array<OptionsType>> {
 }
 
 
-async function gitClone(repo_url: string) {
+async function gitClone(repo_url: string): Promise<void> {
   const gitProcess = spawn('git', ['clone', repo_url])
 
-  gitProcess.stdout.on('data', (data) => console.log(`stdout: ${data}`))
-  gitProcess.stderr.on('data', (data) => console.log(`stderr: ${data}`))
+  // gitProcess.stdout.on('data', (data) => console.log(`stdout: ${data}`))
+  // gitProcess.stderr.on('data', (data) => console.log(`stderr: ${data}`))
 
   return new Promise<void>((resolve, reject) => {
     gitProcess.on('close', (code) => {
       if (code === 0) {
-        console.log('Repository cloned successfully!')
+        // console.log('Repository cloned successfully!')
         resolve()
       } else {
         console.error(`git clone process exited with code ${code}`)
@@ -113,7 +122,7 @@ async function changeWorkingDirectory(dir: string): Promise<void> {
   })
 }
 
-async function openCodeEditor() {
+async function openCodeEditor(): Promise<void> {
   // const command = 'code .';
   // const cmd = `tmux new -s ${dirname}` // dirname should be the name of the repo
   const command = 'nvim .';
@@ -123,6 +132,7 @@ async function openCodeEditor() {
   terminal.on('exit', (code) => {
     if (code === 0) {
       console.log('Command executed successfully!');
+      process.exit(0)
     } else {
       console.error(`Command exited with code ${code}`);
     }
