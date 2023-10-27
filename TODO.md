@@ -1,11 +1,14 @@
 ## make a back button
-
-## github only sends like 20 repos at a time, 
-## need to make a way to get all of them 
-## or an options to get more/search/filter
 -- 
+## github only sends like 20 repos at a time, 
+ - need to make a way to get all of them 
+ - or an options to get more/search/filter
+-- 
+## should add ssh_url to the options and prompt the user to choose 
+ - between https and ssh
 
-
+## open terminal based on OS
+ - process.platform === 'darwin' || 'linux' || 'win32'
 
 get cfg
 

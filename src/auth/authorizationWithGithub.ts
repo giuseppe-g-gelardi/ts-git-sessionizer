@@ -1,8 +1,9 @@
-import dotenv from 'dotenv'
 import axios from 'axios'
 import express, { Request, Response } from 'express'
-import { ConfigManager, type UserConfig } from './config'
-import { openBrowser } from './openBrowser'
+import dotenv from 'dotenv'
+
+import { ConfigManager, type UserConfig } from '../ConfigManager'
+import { openBrowser } from '../utils'
 
 dotenv.config()
 

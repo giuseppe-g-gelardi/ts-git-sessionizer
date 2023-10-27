@@ -1,8 +1,8 @@
 
-export { configureTmuxOptions } from "./tmux_options";
-export { configureAliasOptions } from "./alias_options";
-export { configureEditorOptions } from "./editor_options";
-export { repoSelection } from "./repo_selection";
-export { WelcomeDialog } from "./welcomeDialog";
-export { configureEditor } from "./configureEditor";
+export { configureTmuxOptions } from "./configureEditor/tmux_options";
+export { configureAliasOptions } from "./configureEditor/alias_options";
+export { configureEditorOptions } from "./configureEditor/editor_options";
+export { repoSelection } from "./selectRepo/repoSelection";
+export { welcomeDialog } from "./welcomeDialog";
+export { configureEditor } from "./configureEditor/configureEditor";
 export { initCli } from "./initCli";
