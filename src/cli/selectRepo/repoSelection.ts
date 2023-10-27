@@ -28,31 +28,26 @@ export async function repoSelection(token: string): Promise<void> {
     choices: github_repos,
   })
   const repoName = getRepoNameFromUrl(answer)
-  // const spinner = ora('Cloning repository...\n').start()
+  const spinner = ora('Cloning repository...\n').start()
 
-  // const repoUrl = answer
-
-  const spinner = ora().start()
   try {
-
-    // setTimeout(() => {
-    //   spinner.text = 'Cloning repository...'
-    // }, 2000)
     await gitClone(answer)
     spinner.succeed('Repository cloned successfully!')
-
-
-
   } catch (error) {
     spinner.fail('Failed to clone repository!')
     console.log(error)
     process.exit(1)
   }
 
+  const editor = `nvim`
+  spinner.start(`Opening ${repoName} in ${editor}...`)
   setTimeout(async () => {
-    await changeWorkingDirectory(repoName)
-    await openCodeEditor()
-  }, 2000)
+    spinner.succeed()
+    setTimeout(async () => {
+      await changeWorkingDirectory(repoName)
+      await openCodeEditor()
+    }, 1000)
+  }, 1000)
 }
 
 function getRepoNameFromUrl(url: string): string {
@@ -89,7 +84,6 @@ async function fetchGithubRepos(token: string): Promise<Array<OptionsType>> {
 
 async function gitClone(repo_url: string): Promise<void> {
   const gitProcess = spawn('git', ['clone', repo_url])
-
   // gitProcess.stdout.on('data', (data) => console.log(`stdout: ${data}`))
   // gitProcess.stderr.on('data', (data) => console.log(`stderr: ${data}`))
 
