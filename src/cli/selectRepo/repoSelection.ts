@@ -6,6 +6,7 @@ import ora from 'ora'
 import axios from 'axios'
 import { select } from "@inquirer/prompts"
 
+
 type PartialRepo = {
   name: string,
   html_url: string,
@@ -34,8 +35,10 @@ export async function repoSelection(token: string): Promise<void> {
 
     const repoName = getRepoNameFromUrl(repoUrl)
     await changeWorkingDirectory(repoName)
+
     spinner.succeed('Repository cloned successfully!')
-    
+    await openCodeEditor()
+
   } catch (error) {
     spinner.fail('Failed to clone repository!')
     console.log(error)
@@ -57,7 +60,7 @@ async function fetchGithubRepos(token: string): Promise<Array<OptionsType>> {
 
   try {
     const userResponse = await axios.get('https://api.github.com/user', { headers })
-    const repoResponse = await axios.get(userResponse.data.repos_url, { headers})
+    const repoResponse = await axios.get(userResponse.data.repos_url, { headers })
 
     const repository_list = repoResponse.data.map((r: PartialRepo) => ({
       name: r.name,
@@ -100,7 +103,7 @@ async function changeWorkingDirectory(dir: string): Promise<void> {
 
   return new Promise<void>((resolve, reject) => {
     try {
-      process.chdir(`./${dir}`)
+      process.chdir(dir)
       console.log(`Changed working directory to ${dir}`)
       resolve()
     } catch (error) {
@@ -109,3 +112,21 @@ async function changeWorkingDirectory(dir: string): Promise<void> {
     }
   })
 }
+
+async function openCodeEditor() {
+  // const command = 'code .';
+  // const cmd = `tmux new -s ${dirname}` // dirname should be the name of the repo
+  const command = 'nvim .';
+  const terminal = spawn(command, { shell: true, stdio: 'inherit' });
+  terminal.on('error', (error) => console.error(`Error: ${error}`))
+
+  terminal.on('exit', (code) => {
+    if (code === 0) {
+      console.log('Command executed successfully!');
+    } else {
+      console.error(`Command exited with code ${code}`);
+    }
+  })
+}
+
+
