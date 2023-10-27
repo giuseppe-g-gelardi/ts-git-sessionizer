@@ -31,24 +31,53 @@ export async function repoSelection(token: string): Promise<void> {
   const spinner = ora('Cloning repository...\n').start()
 
   try {
-    await gitClone(answer)
+    setTimeout(() => {
+      spinner.succeed()
+      console.log(`Cloning ${repoName}...`)
+    }, 2000)
+    // await gitClone(answer)
     spinner.succeed('Repository cloned successfully!')
+
+    await startTmuxAndNvim(repoName)
+
+    // await cdIntoAndEdit("nvim", repoName)
   } catch (error) {
     spinner.fail('Failed to clone repository!')
     console.log(error)
     process.exit(1)
   }
+}
 
-  const editor = `nvim`
+// this is a monstrosity but it works
+async function cdIntoAndEdit(editor: string, repoName: string): Promise<void> {
+  const spinner = ora('Changing working directory...\n').start()
   spinner.start(`Opening ${repoName} in ${editor}...`)
   setTimeout(async () => {
     spinner.succeed()
+    spinner.start(`Changing working directory to ${repoName}...`)
     setTimeout(async () => {
+      spinner.succeed()
       await changeWorkingDirectory(repoName)
-      await openCodeEditor()
+      // spinner.start(`opening editor`)
+      // setTimeout(async () => {
+      //   spinner.succeed()
+      //   await openCodeEditorPromise()
+      // }, 100)
+      spinner.start(`starting tmux session`)
+      setTimeout(async () => {
+        spinner.succeed()
+        await startTmuxSession(repoName)
+        spinner.start(`opening editor`)
+        setTimeout(async () => {
+          spinner.succeed()
+          await openCodeEditorPromise()
+        }, 100)
+      }, 100)
     }, 1000)
   }, 1000)
+
 }
+
 
 function getRepoNameFromUrl(url: string): string {
   const parsedUrl = parse(url)
@@ -84,30 +113,24 @@ async function fetchGithubRepos(token: string): Promise<Array<OptionsType>> {
 
 async function gitClone(repo_url: string): Promise<void> {
   const gitProcess = spawn('git', ['clone', repo_url])
-  // gitProcess.stdout.on('data', (data) => console.log(`stdout: ${data}`))
-  // gitProcess.stderr.on('data', (data) => console.log(`stderr: ${data}`))
-
   return new Promise<void>((resolve, reject) => {
-    gitProcess.on('close', (code) => {
-      if (code === 0) {
-        // console.log('Repository cloned successfully!')
-        resolve()
-      } else {
-        console.error(`git clone process exited with code ${code}`)
-        reject()
-      }
-    })
+    gitProcess.on('close', (code) => code === 0 ? resolve() : reject(`Process exited with code ${code}`))
+    // gitProcess.on('close', (code) => {
+    //   if (code === 0) {
+    //     // console.log('Repository cloned successfully!')
+    //     resolve()
+    //   } else {
+    //     console.error(`git clone process exited with code ${code}`)
+    //     reject()
+    //   }
+    // })
   })
 }
 
 async function changeWorkingDirectory(dir: string): Promise<void> {
-
-  console.info(`Changing working directory to ${dir}`)
-
   return new Promise<void>((resolve, reject) => {
     try {
       process.chdir(dir)
-      console.log(`Changed working directory to ${dir}`)
       resolve()
     } catch (error) {
       console.log(error)
@@ -116,21 +139,128 @@ async function changeWorkingDirectory(dir: string): Promise<void> {
   })
 }
 
+
+// !
+async function startTmuxSession(sessionName: string): Promise<void> {
+  // const tmuxProcess = spawn('tmux', ['new', '-s', sessionName])
+  const tmuxProcess = spawn(`tmux new -d -s ${sessionName}`, { shell: true, stdio: 'inherit' })
+  tmuxProcess.on('error', (error) => console.error(`Error: ${error}`))
+  // tmuxProcess.stdout.on('data', (data) => console.log(`stdout: ${data}`))
+  // tmuxProcess.stderr.on('data', (data) => console.log(`stderr: ${data}`))
+
+  return new Promise<void>((resolve, reject) => {
+    tmuxProcess.on('close', (code) => {
+      if (code === 0) {
+        // console.log('tmux session started successfully!')
+        resolve()
+      } else {
+        // console.error(`tmux session exited with code ${code}`)
+        reject()
+      }
+    })
+  })
+}
+// !
+
 async function openCodeEditor(): Promise<void> {
   // const command = 'code .';
-  // const cmd = `tmux new -s ${dirname}` // dirname should be the name of the repo
   const command = 'nvim .';
+  // const command = `tmux send-keys -t _tmux_conf.0 'nvim .' C-m`;
   const terminal = spawn(command, { shell: true, stdio: 'inherit' });
   terminal.on('error', (error) => console.error(`Error: ${error}`))
 
   terminal.on('exit', (code) => {
     if (code === 0) {
-      console.log('Command executed successfully!');
+      // console.log('Command executed successfully!');
       process.exit(0)
     } else {
-      console.error(`Command exited with code ${code}`);
+      // console.error(`Command exited with code ${code}`);
     }
   })
 }
 
+async function openCodeEditorPromise(): Promise<void> {
+  return new Promise<void>((resolve, reject) => {
+    // const command = 'nvim .';
+    // const command = `tmux send-keys -t ${repoName.replace(".", "_")} "nvim" C-m`;
+    const command = `tmux send-keys -t _tmux_conf "nvim ." C-m`;
+    const terminal = spawn(command, { shell: true, stdio: 'inherit' });
+    terminal.on('error', (error) => console.error(`Error: ${error}`))
+
+    terminal.on('exit', (code) => {
+      if (code === 0) {
+        // console.log('Command executed successfully!');
+        resolve()
+      } else {
+        // console.error(`Command exited with code ${code}`);
+        reject()
+      }
+    })
+  })
+}
+
+// export async function runCommand(command: string): Promise<void>
+export async function runCommand(command: string, args?: string[]): Promise<void> {
+  return new Promise<void>((resolve, reject) => {
+    const childProcess = spawn(command, args ? args : [], { stdio: 'inherit' });
+    childProcess.on('error', (error) => reject(error));
+    childProcess.on('close', (code) => code === 0 ? resolve() : reject(`Process exited with code ${code}`));
+  });
+}
+
+
+async function switchClient() {
+  const command = `tmux send-keys -t _tmux_conf "switch-client -t _tmux_conf" C-m`;
+  const terminal = spawn(command, { shell: true, stdio: 'inherit' });
+  terminal.on('error', (error) => console.error(`Error: ${error}`))
+  terminal.on('exit', (code) => code === 0 ? process.exit(0) : console.error(`${code}`))
+}
+
+async function startTmuxAndNvim(repoName = '.tmux.conf') {
+  // const tmuxCommand = `tmux new-session -s ${repoName} -d`;
+  // const nvimCommand = `tmux send-keys -t ${repoName.replace(".", "_")} "nvim" C-m`;
+
+  try {
+    // Start the tmux session // await runCommand('bash', ['-c', tmuxCommand]);
+    await startTmuxSession(repoName)
+
+    await sleep(1000); 
+
+    await openCodeEditorPromise()
+
+    await sleep(1000)
+
+    // const command = `tmux send-keys -t _tmux_conf "nvim ." C-m`;
+    await runCommand('tmux')
+    await sleep(1000)
+await switchClient()
+
+  } catch (error) {
+    console.error('Error:', error);
+  }
+}
+
+// async function runCommand(command: string, args: string[]): Promise<void> {
+//   return new Promise<void>((resolve, reject) => {
+//     const childProcess = spawn(command, args);
+
+//     childProcess.on('error', (error) => {
+//       reject(error);
+//     });
+
+//     childProcess.on('close', (code) => {
+//       if (code === 0) {
+//         resolve();
+//       } else {
+//         reject(`Process exited with code ${code}`);
+//       }
+//     });
+//   });
+// }
+
+function sleep(ms: number) {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
+}
 
