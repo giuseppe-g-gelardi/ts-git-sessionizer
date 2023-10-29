@@ -7,7 +7,7 @@ export async function initCli(config: UserConfig, cm: ConfigManager) {
   const welcome = await welcomeDialog()
 
   if (welcome === 'open') {
-    await repoSelection(config.user_profile.access_token)
+    await repoSelection(config.user_profile.access_token, cm)
   } else if (welcome === 'update') {
     await configureEditor(cm)
   } else if (welcome === 'exit') {
