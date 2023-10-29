@@ -51,14 +51,53 @@ async function startTmuxAndNvim(repoName = '.cli-test', type: ("detached" | "reg
   }
 }
 
+// async function startTmuxSession(sessionName: string): Promise<void> {
+//   const tmuxProcess = spawn(`tmux new -s ${sessionName}`, { shell: true, stdio: 'inherit' })
+//   tmuxProcess.on('error', (error) => console.error(`Error: ${error}`))
+
+//   const nvimProcess = spawn(`tmux send-keys -t ${sessionName} 'nvim .' C-m`, { shell: true, stdio: 'inherit' })
+//   nvimProcess.on('error', (error) => console.error(`Error: ${error}`))
+
+//   return new Promise<void>((resolve, reject) => {
+//     tmuxProcess.on('close', (code) => code === 0 ? resolve() : reject(`Process exited with code ${code}`))
+//     nvimProcess.on('close', (code) => code === 0 ? resolve() : reject(`Process exited with code ${code}`))
+//   })
+// }
+
+
 async function startTmuxSession(sessionName: string): Promise<void> {
-  const tmuxProcess = spawn(`tmux new -s ${sessionName}`, { shell: true, stdio: 'inherit' })
-  tmuxProcess.on('error', (error) => console.error(`Error: ${error}`))
+  console.log(`Starting tmux session ${sessionName}`)
+  // Start the tmux session
+  const tmuxProcess = spawn(`tmux new -s ${sessionName}`, { shell: true, stdio: 'inherit' });
+  tmuxProcess.on('error', (error) => console.error(`Error: ${error}`));
+
+  // Wait for a moment to allow the tmux session to initialize
+  await new Promise((resolve) => setTimeout(resolve, 1000));
+
+  // Send keys to open nvim within the tmux session
+  // const nvimProcess = spawn(`tmux send-keys -t ${sessionName} 'nvim .' C-m`, { shell: true, stdio: 'inherit' });
+  const nvimProcess = spawn(`tmux send-keys -t _cli-test 'nvim .' C-m`, { shell: true, stdio: 'inherit' });
+  nvimProcess.on('error', (error) => console.error(`Error: ${error}`));
 
   return new Promise<void>((resolve, reject) => {
-    tmuxProcess.on('close', (code) => code === 0 ? resolve() : reject(`Process exited with code ${code}`))
-  })
+    tmuxProcess.on('close', (code) => {
+      // The tmux process should be the one to determine success or failure
+      if (code === 0) {
+        resolve();
+      } else {
+        reject(`tmux process exited with code ${code}`);
+      }
+    });
+    nvimProcess.on('close', (code) => {
+      // The nvim process closing doesn't determine the overall success or failure
+      // It's the tmux process that matters
+      if (code !== 0) {
+        console.error(`nvim process exited with code ${code}`);
+      }
+    });
+  });
 }
+
 
 async function startDetachedTmuxSession(sessionName: string): Promise<void> {
   const tmuxProcess = spawn(`tmux new -d -s ${sessionName}`, { shell: true, stdio: 'inherit' })
