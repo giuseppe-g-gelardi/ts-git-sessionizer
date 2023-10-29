@@ -1,7 +1,9 @@
-import {parse} from 'url'
-import axios from 'axios'
+import { parse } from 'url'
 
 import ora from 'ora'
+
+import dotenv from 'dotenv'
+dotenv.config()
 
 
 type PartialRepo = {
@@ -27,90 +29,30 @@ export function getRepoNameFromUrl(url: string): string {
 }
 
 export async function fetchGithubRepos(token: string): Promise<Array<OptionsType>> {
-  const spinner = ora('Fetching your repositories...').start();
-  const headers = { Authorization: `token ${token}` };
+  const spinner = ora('Fetching repositories...').start()
+  const perPage = 100; // Number of repositories to fetch per page
+  let page = 1;
+  let allRepos: PartialRepo[] = [];
+  let moreRepos = true
 
-  try {
-    const userResponse = await axios.get('https://api.github.com/user', { headers });
-    const reposUrl = userResponse.data.repos_url;
-    // const reposUrl = 'https:/api.github.com/user/repos'
-    // const reposUrl = `https://api.github.com/search/repositories?q=user:${userResponse.data.login.replace(/['"]+/g, '')}}`
-    let allRepositories: OptionsType[] = [];
-    let page = 1;
-    let hasMorePages = true;
+  while (moreRepos) {
+    const url = `https://api.github.com/user/repos?page=${page}&per_page=${perPage}&visibility=all`;
+    const response = await fetch(url, { headers: { Authorization: `token ${token}` } });
+    const repos = await response.json();
 
-    while (hasMorePages) {
-      const repoResponse = await axios.get(reposUrl, {
-        headers,
-        params: { page, per_page: 100, type: 'all' }, // Adjust per_page as needed
-      });
-
-      const repositories = repoResponse.data.map((r: PartialRepo) => ({
-        name: r.name && `${r.name} -- ${r.private ? '(private)' : '(public)'}`,
-        value: r.html_url,
-        description: r.description,
-      }));
-
-      allRepositories = allRepositories.concat(repositories);
-
-      if (repoResponse.headers.link && repoResponse.headers.link.includes('rel="next"')) {
-        // If there is a "next" link in the response headers, there are more pages.
-        page++;
-      } else {
-        hasMorePages = false; // No more pages to fetch
-      }
+    if (repos.length === 0) {
+      moreRepos = false;
+      break; // No more repositories to fetch
+    } else {
+      allRepos = allRepos.concat(repos);
+      page++;
     }
-
-    spinner.succeed('Repositories fetched successfully!');
-    return allRepositories;
-  } catch (error) {
-    spinner.fail('Failed to fetch repositories!');
-    console.error(error);
-    process.exit(1);
   }
+
+  spinner.succeed(`Fetched ${allRepos.length} repositories!`)
+  return allRepos.map((r: PartialRepo) => ({
+    name: r.name && `${r.name} -- ${r.private ? '(private)' : '(public)'}`,
+    value: r.html_url,
+    description: r.description,
+  }));
 }
-
-
-
-// export async function fetchGithubRepos(token: string): Promise<Array<OptionsType>> {
-//   const spinner = ora('Fetching your repositories...').start()
-//   const headers = { Authorization: `token ${token}` }
-
-//   try {
-//     // const userResponse = await axios.get('https://api.github.com/user', { headers })
-//     // const repoResponse = await axios.get(userResponse.data.repos_url, { headers })
-
-//     const userResponse = await axios.get('https://api.github.com/user', { headers });
-//     const reposUrl = userResponse.data.repos_url;
-//     // const reposUrl = 'https:/api.github.com/user/repos'
-//     // const reposUrl = `https://api.github.com/search/repositories?q=user:${userResponse.data.login.replace(/['"]+/g, '')}}`
-//     let allRepositories: OptionsType[] = [];
-//     let page = 1;
-//     let hasMorePages = true;
-
-//     const repositories = repoResponse.data.map((r: PartialRepo) => ({
-//       name: r.name && `${r.name} -- ${r.private ? '(private)' : '(public)'}`,
-//       value: r.html_url,
-//       description: r.description,
-//     }));
-
-//     // const repository_list = repoResponse.data.map((r: PartialRepo) => ({
-//     //   name: r.name + (r.private ?  ' -- (private)' : ' -- (public)'),
-//     //   value: r.html_url,
-//     //   description: r.description
-//     }))
-
-//     while (hasMorePages) {
-//       const repoResponse = await axios.get(reposUrl, {
-//         headers,
-//         params: { page, per_page: 100, type: 'all' }, // Adjust per_page as needed
-//       });
-
-//     spinner.succeed('Repositories fetched successfully!')
-//     return repository_list
-//   } catch (error) {
-//     spinner.fail('Failed to fetch repositories!')
-//     console.log(error)
-//     process.exit(1)
-//   }
-// }
