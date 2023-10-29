@@ -5,7 +5,6 @@
   "main": "index.js",
   "scripts": {
     "start": "ts-node --swc ./src/index.ts",
-    "dev": "nodemon --watch './src/**/*.ts' --exec 'ts-node --swc' ./src/index.ts",
     "test": "jest --watch tests/*.ts"
   },
   "keywords": [],
@@ -20,7 +19,6 @@
     "@typescript-eslint/parser": "^5.59.0",
     "eslint": "^8.38.0",
     "eslint_d": "^12.2.1",
-    "nodemon": "^2.0.22",
     "regenerator-runtime": "^0.13.11",
     "ts-jest": "^29.1.1",
     "ts-node": "^10.9.1",
