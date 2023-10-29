@@ -7,6 +7,13 @@
 ## should add ssh_url to the options and prompt the user to choose 
  - between https and ssh
 
+## open terminal based on OS
+ - process.platform === 'darwin' || 'linux' || 'win32'
+
+## work on tmux integration at a later date
+ - having a hard time getting the program to start a (non detached) 
+   tmux session
+ - and then open the editor in that session
 
 get cfg
 
@@ -36,3 +43,6 @@ if deps, install need to figure out how to do this with each language
 -> close program at this point???
 
 */
+
+
+
