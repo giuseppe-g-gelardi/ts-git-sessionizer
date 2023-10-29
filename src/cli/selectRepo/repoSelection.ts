@@ -86,14 +86,15 @@ async function changeWorkingDirectory(dir: string): Promise<void> {
 // !
 async function startTmuxSession(sessionName: string): Promise<void> {
   // const tmuxProcess = spawn('tmux', ['new', '-s', sessionName])
-  const tmuxProcess = spawn(`tmux new -d -s ${sessionName}`, { shell: true, stdio: 'inherit' })
-  // const tmuxProcess = spawn(`tmux new -s ${sessionName}`, { shell: true, stdio: 'inherit' })
+  // const tmuxProcess = spawn(`tmux new -d -s ${sessionName}`, { shell: true, stdio: 'inherit' })
+  const tmuxProcess = spawn(`tmux new -s ${sessionName}`, { shell: true, stdio: 'inherit' })
   tmuxProcess.on('error', (error) => console.error(`Error: ${error}`))
 
   return new Promise<void>((resolve, reject) => {
     tmuxProcess.on('close', (code) => code === 0 ? resolve() : reject(`Process exited with code ${code}`))
   })
 }
+// !
 
 async function openCodeEditorPromise(): Promise<void> {
   // const command = 'nvim .';
@@ -110,22 +111,23 @@ async function openCodeEditorPromise(): Promise<void> {
 // export const openNvim = runCommand(`tmux send-keys -t _cli-test "nvim ." C-m`)
 // const nvimCommand = `tmux send-keys -t ${repoName.replace(".", "_")} "nvim" C-m`;
 
+
+// //! 
 async function startTmuxAndNvim(repoName = '.cli-test') {
   
   try {
     await changeWorkingDirectory(repoName)
     await startTmuxSession(repoName)
-    await openCodeEditorPromise()
+    // await openCodeEditorPromise()
     await runCommand('tmux')
-    await runCommand(`tmux send-keys -t _cli-test 'cd ${repoName}' C-m`)
-    await runCommand(`tmux send-keys -t _cli-test "nvim ." C-m`)
+    // await runCommand(`tmux send-keys -t _cli-test 'cd ${repoName} && nvim .' C-m`)
+    await runCommand(`tmux send-keys -t ${repoName.replace('.', '_')} 'cd ${repoName} && nvim .' C-m`)
+    // await runCommand(`tmux send-keys -t _cli-test "nvim ." C-m`)
   } catch (error) {
     console.error('Error:', error);
   }
-  console.debug('made after catch block in startTmuxAndNvim')
-  return
 }
-
+// //!
 
 
 // refactor juice
