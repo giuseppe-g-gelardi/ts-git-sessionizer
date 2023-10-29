@@ -20,18 +20,6 @@ import { initCli } from './cli'
 // dotenv.config()
 // const token = process.env.GITHUB_TOKEN
 
-// // (async function main() {
-
-// //   const repos = await fetch('https://api.github.com/user/repos', {
-// //     headers: {
-// //       Authorization: `token ${"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"}`,
-// //     }
-// //   }).then(res => res.json())
-
-// //   console.log(repos.length)
-
-// // })()
-
 // async function getAllRepositories<T>() {
 //   const perPage = 100; // Number of repositories to fetch per page
 //   let page = 1;
