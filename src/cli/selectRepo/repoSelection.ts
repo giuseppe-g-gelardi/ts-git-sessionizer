@@ -8,12 +8,10 @@ import { spawn } from 'child_process'
 import ora from 'ora'
 import { select } from "@inquirer/prompts"
 
-
-
 export async function repoSelection(token: string, cm: ConfigManager): Promise<void> {
   const github_repos = await fetchGithubRepos(token)
   const answer = await select({
-    message: `Select a repository ${github_repos.length}`,
+    message: 'Select a repository',
     pageSize: 8,
     loop: true,
     choices: github_repos,
@@ -84,6 +82,9 @@ async function changeWorkingDirectory(dir: string): Promise<void> {
 
 async function openCodeEditorPromise(): Promise<void> {
   const command = 'nvim .';
+  // const command = `tmux send-keys -t ${repoName.replace(".", "_")} "nvim" C-m`;
+  // const command = `tmux send-keys -t _cli-test "nvim ." C-m`;
+  // const command = `tmux send-keys -t 1 "nvim ." C-m`; 
   const terminal = spawn(command, { shell: true, stdio: 'inherit' });
   return new Promise<void>((resolve, reject) => {
     terminal.on('error', (error) => console.error(`Error: ${error}`))

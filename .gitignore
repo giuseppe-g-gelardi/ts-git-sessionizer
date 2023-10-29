@@ -6,8 +6,6 @@
 .env
 .env.*
 
-!.env.example
-
 .configrc
 
 /src/*.json

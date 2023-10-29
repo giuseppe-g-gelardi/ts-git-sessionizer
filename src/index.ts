@@ -24,7 +24,7 @@ import { initCli } from './cli'
 
 // //   const repos = await fetch('https://api.github.com/user/repos', {
 // //     headers: {
-// //       Authorization: `token ${"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"}`,
+// //       Authorization: `token ${"TOKEN lol"}`,
 // //     }
 // //   }).then(res => res.json())
 
