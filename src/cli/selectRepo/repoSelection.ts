@@ -11,7 +11,7 @@ import { select } from "@inquirer/prompts"
 export async function repoSelection(token: string, cm: ConfigManager): Promise<void> {
   const github_repos = await fetchGithubRepos(token)
   const answer = await select({
-    message: 'Select a repository',
+    message: `Select a repository -- ${github_repos.length} repositories found`,
     pageSize: 8,
     loop: true,
     choices: github_repos,
