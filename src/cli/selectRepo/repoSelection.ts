@@ -25,12 +25,14 @@ export async function repoSelection(token: string, cm: ConfigManager): Promise<v
     await gitClone(answer)
     spinner.succeed('Repository cloned successfully!')
 
-    if (cfg.editor.name === 'neovim' && cfg.editor.tmux === true) {
+    if (cfg.editor.name === 'neovim'
+      || cfg.editor.name === 'vim'
+      && cfg.editor.tmux === true) {
       await startTmuxAndNvim(repoName)
     }
 
-    if (cfg.editor.name === 'neovim' && cfg.editor.tmux === false) {
-      await cdIntoAndEdit("nvim", repoName)
+    if (cfg.editor.tmux === false) {
+      await cdIntoAndEdit(cfg.editor.name, repoName)
     }
 
 
@@ -54,7 +56,7 @@ async function cdIntoAndEdit(editor: string, repoName: string): Promise<void> {
       spinner.start(`opening editor`)
       setTimeout(async () => {
         spinner.succeed()
-        await openCodeEditorPromise()
+        await openCodeEditorPromise(editor)
       }, 100)
     }, 1000)
   }, 1000)
@@ -80,19 +82,30 @@ async function changeWorkingDirectory(dir: string): Promise<void> {
 }
 
 
-async function openCodeEditorPromise(): Promise<void> {
-  const command = 'nvim .';
-  // const command = `tmux send-keys -t ${repoName.replace(".", "_")} "nvim" C-m`;
-  // const command = `tmux send-keys -t _cli-test "nvim ." C-m`;
-  // const command = `tmux send-keys -t 1 "nvim ." C-m`; 
+async function openCodeEditorPromise(editor: string): Promise<void> {
+  let command: string;
+
+  switch (editor) {
+    case 'neovim':
+      command = 'nvim .';
+      break;
+    case 'vim':
+      command = 'vim .'
+      break;
+    case 'vscode':
+      command = 'code .'
+      break;
+    default:
+      command = 'code .'
+      break;
+  }
+
   const terminal = spawn(command, { shell: true, stdio: 'inherit' });
   return new Promise<void>((resolve, reject) => {
     terminal.on('error', (error) => console.error(`Error: ${error}`))
     terminal.on('exit', (code) => code === 0 ? resolve() : reject(`Process exited with code ${code}`))
   })
 }
-
-// 
 
 async function startTmuxAndNvim(repoName: string): Promise<void> {
   try {
@@ -135,14 +148,3 @@ async function startTmuxSession(sessionName: string): Promise<void> {
   });
 }
 
-
-
-// * refactor juice
-// // export async function runCommand(command: string): Promise<void>
-// export async function runCommand(command: string, args?: string[]): Promise<void> {
-//   return new Promise<void>((resolve, reject) => {
-//     const childProcess = spawn(command, args ? args : [], { stdio: 'inherit' });
-//     childProcess.on('error', (error) => reject(error));
-//     childProcess.on('close', (code) => code === 0 ? resolve() : reject(`Process exited with code ${code}`));
-//   });
-// }
