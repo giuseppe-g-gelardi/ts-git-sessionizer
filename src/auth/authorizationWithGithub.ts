@@ -1,6 +1,7 @@
 import axios from 'axios'
 import express, { Request, Response } from 'express'
 import dotenv from 'dotenv'
+import portfinder from 'portfinder'
 
 import { ConfigManager, type UserConfig } from '../ConfigManager'
 import { openBrowser } from '../utils'
@@ -11,12 +12,24 @@ export async function authorizationWithGithub(cm: ConfigManager): Promise<void> 
   return new Promise((resolve, reject) => {
 
     const app = express()
-    const port = process.env.PORT || 9000
-    app.listen(port, () => console.info({ message: `OAuth server is running on http://localhost:${port}` }));
+    const defaultPort = process.env.PORT || 9000;
+
+    portfinder.getPort({ port: defaultPort as number }, (err, port) => {
+      if (err) {
+        console.error(err)
+        process.exit(1)
+      }
+
+      process.env.PORT = port.toString()
+      const yourPort = process.env.PORT
+      console.log(`Your port is ${yourPort}`)
+    })
+
+    app.listen(defaultPort, () => console.info({ message: `OAuth server is running on http://localhost:${process.env.PORT}` }));
     const clientId = process.env.CLIENT_ID as string;
     const clientSecret = process.env.CLIENT_SECRET as string;
 
-    openBrowser(`http://localhost:${port}`).then(() => {
+    openBrowser(`http://localhost:${defaultPort}`).then(() => {
       console.info('Browser opened successfully');
     })
       .catch((error) => {
