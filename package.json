@@ -6,6 +6,7 @@
   "scripts": {
     "start": "ts-node --swc ./src/index.ts",
     "dev": "nodemon --watch './src/**/*.ts' --exec 'ts-node --swc' ./src/index.ts",
+    "build": "tsc",
     "test": "jest --watch tests/*.ts"
   },
   "keywords": [],
