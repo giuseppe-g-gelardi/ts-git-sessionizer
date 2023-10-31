@@ -23,31 +23,29 @@ import { openBrowser } from './utils';
 
 
 (async function main() {
+  await deviceFlowAuth()
+})();
+
+async function deviceFlowAuth() {
   dotenv.config()
 
   const auth = createOAuthDeviceAuth({
     clientType: 'oauth-app',
     clientId: process.env.CLIENT_ID as string,
-    scopes: ["public_repo", "read:user"],
+    scopes: ["repo", "read:user"],
     onVerification(verification) {
-      // console.log('Open %s', verification.verification_uri)
       console.info('Press enter to authenticate with GitHub')
       console.log('Enter code %s', verification.user_code)
 
       process.stdin.once('data', (data) => {
-        if (data.toString() === '\n') {
-          openBrowser(verification.verification_uri)
-        } else {
-          console.warn('invalid input')
-        }
+        if (data.toString() === '\n') { openBrowser(verification.verification_uri) }
+        else { console.warn('invalid input') }
       })
     }
   })
 
-  const tokenAuthentication = await auth({
-    type: 'oauth',
-  });
-
+  const tokenAuthentication = await auth({ type: 'oauth', });
   console.log(tokenAuthentication)
 
-})();
+}
+

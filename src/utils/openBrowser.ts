@@ -4,14 +4,6 @@ export function openBrowser(url: string): Promise<void> {
   return new Promise((resolve, reject) => {
     let openCommand: string;
 
-    // if (process.platform === 'darwin') {
-    //   openCommand = `open ${url}`;
-    // } else if (process.platform === 'win32') {
-    //   openCommand = `start ${url}`;
-    // } else {
-    //   openCommand = `xdg-open ${url}`;
-    // }
-
     switch (process.platform) {
       case 'darwin': openCommand = `open ${url}`; break;
       case 'win32': openCommand = `start ${url}`; break;
