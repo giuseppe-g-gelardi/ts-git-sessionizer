@@ -27,6 +27,7 @@ get cfg
 
 set up the scripty things:
 git clone {url}
+PORT="9000"
 ...
 cd into repo_name
 if deps, install need to figure out how to do this with each language
