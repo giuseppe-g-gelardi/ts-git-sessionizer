@@ -19,7 +19,6 @@ type OptionsType = {
   description: string
 }
 
-
 export function getRepoNameFromUrl(url: string): string {
   const parsedUrl = parse(url)
   const pathname = parsedUrl.pathname || ''

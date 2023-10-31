@@ -10,6 +10,13 @@ the application uses github authentication and some interactive prompts to {hope
  - start a tmux session, if that's your cup of tea
  - and finally, open the repo in your preferred editor
 
+TODO: 
+- [ ] make back button
+- [x] implement device flow auth
+- [ ] add ssh_url to gitClone options
+- [ ] add functionality for worktrees "'--bare' repos" 
+
+
 ## To get started:
 1. create a new oauth app in your gh developer settings 
  - homepage url: http://localhost:{port} 

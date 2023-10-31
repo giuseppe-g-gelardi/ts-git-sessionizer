@@ -6,6 +6,7 @@
   "scripts": {
     "start": "ts-node --swc ./src/index.ts",
     "dev": "nodemon --watch './src/**/*.ts' --exec 'ts-node --swc' ./src/index.ts",
+    "build": "tsc",
     "test": "jest --watch tests/*.ts"
   },
   "keywords": [],
@@ -30,6 +31,8 @@
     "@inquirer/input": "^1.2.13",
     "@inquirer/prompts": "^3.2.0",
     "@inquirer/select": "^1.3.0",
+    "@octokit/auth-oauth-device": "^6.0.1",
+    "@octokit/core": "^5.0.1",
     "@types/axios": "^0.14.0",
     "@types/express": "^4.17.20",
     "@types/express-session": "^1.17.9",
@@ -44,6 +47,7 @@
     "open": "^9.1.0",
     "ora": "^3.2.0",
     "passport": "^0.6.0",
-    "passport-github": "^1.1.0"
+    "passport-github": "^1.1.0",
+    "portfinder": "^1.0.32"
   }
 }
