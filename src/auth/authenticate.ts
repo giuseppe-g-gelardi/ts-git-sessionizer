@@ -1,6 +1,6 @@
 import { spawn } from "child_process";
 import { ConfigManager, type UserConfig } from "../ConfigManager";
-import { authenticateWithGithub } from "./authenticateWithGithub";
+import { authenticateWithGithub } from ".";
 
 export async function authenticate(config: UserConfig, cm: ConfigManager): Promise<void> {
   if (config.user_profile.access_token === "") {
