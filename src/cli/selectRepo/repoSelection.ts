@@ -18,7 +18,7 @@ export async function repoSelection(token: string, cm: ConfigManager): Promise<v
   })
   const repoName = getRepoNameFromUrl(answer)
   const spinner = ora('Cloning repository...\n').start()
-  const cfg = cm.getConfig()
+  const cfg = await cm.getConfig()
 
   try {
     spinner.succeed()

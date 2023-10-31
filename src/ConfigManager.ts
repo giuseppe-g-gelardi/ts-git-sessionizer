@@ -37,7 +37,7 @@ export class ConfigManager {
     this.defaultConfig = defaultConfig;
   }
 
-  getConfig(rc_depth = 0): UserConfig {
+  async getConfig(rc_depth = 0): Promise<UserConfig> {
     if (rc_depth > 5) {
       throw new Error('Unable to find config file');
     }
@@ -52,14 +52,14 @@ export class ConfigManager {
     }
   }
 
-  writeConfig<T extends object>(params: T | null = null): UserConfig {
+  async writeConfig<T extends object>(params: T | null = null): Promise<UserConfig> {
     try {
       if (params !== null) {
         fs.writeFileSync(this.configFileName, JSON.stringify(params, null, 2)); // -> console.log('Config file updated');
       } else {
         fs.writeFileSync(this.configFileName, JSON.stringify(this.defaultConfig, null, 2)); // -> console.log('Config file created');
       }
-      return this.getConfig();
+      return await this.getConfig();
     } catch (err) {
       throw new Error("Error writing to config file")
     }
@@ -67,7 +67,7 @@ export class ConfigManager {
 
   async revalidateConfig() {
     setTimeout(async () => {
-      const updatedConfig = this.getConfig();
+      const updatedConfig = await this.getConfig();
       if (updatedConfig.user_profile.access_token === "") {
         this.getConfig(); throw new Error('Unable to update or verify config');
       }
