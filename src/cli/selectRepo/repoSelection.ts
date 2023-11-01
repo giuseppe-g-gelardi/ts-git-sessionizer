@@ -1,55 +1,18 @@
 
 
 import { type ConfigManager } from '../../ConfigManager'
-import { getRepoNameFromUrl, fetchGithubRepos } from './fetchGithubRepos'
+import { getRepoNameFromUrl } from './fetchGithubRepos'
+import { selectRepoPrompt, isBareRepoPrompt, cloneViaSshOrHttp } from './repo_options'
 
 import { spawn } from 'child_process'
 
 import ora from 'ora'
-import { select } from "@inquirer/prompts"
-
 
 export async function repoSelection(token: string, cm: ConfigManager): Promise<void> {
-  const github_repos = await fetchGithubRepos(token)
-  const answer = await select({
-    message: `Select a repository -- ${github_repos.length} repositories found`,
-    pageSize: 8,
-    loop: true,
-    choices: github_repos,
-  })
+  const answer = await selectRepoPrompt(token)
   const repoName = getRepoNameFromUrl(answer.html)
-
-  const bareRepo = await select({
-    message: 'Clone as bare repository? If you are unsure, select "No"',
-    choices: [
-      {
-        name: 'No (recommended)',
-        value: false,
-        description: 'Clones the repository as a normal repository'
-      },
-      {
-        name: 'Yes',
-        value: true,
-        description: 'Clones the repository as a bare repository -- great for worktrees and .dotfiles'
-      },
-    ]
-  })
-
-  const htmlOrSsh = await select({
-    message: 'Clone via SSH or HTTPS?',
-    choices: [
-      {
-        name: 'HTTP',
-        value: 'http',
-        description: 'Clones the repository via HTTPS'
-      },
-      {
-        name: 'SSH',
-        value: 'ssh',
-        description: 'Clones the repository via SSH'
-      },
-    ]
-  })
+  const bareRepo = await isBareRepoPrompt()
+  const htmlOrSsh = await cloneViaSshOrHttp()
 
   const cloneUrl = htmlOrSsh === 'http' ? answer.html : answer.ssh
   const spinner = ora('Cloning repository...\n').start()
@@ -68,7 +31,6 @@ export async function repoSelection(token: string, cm: ConfigManager): Promise<v
     if (cfg.editor.tmux === false) {
       await cdIntoAndEdit(cfg.editor.name, repoName)
     }
-
 
   } catch (error) {
     spinner.fail('Failed to clone repository!')

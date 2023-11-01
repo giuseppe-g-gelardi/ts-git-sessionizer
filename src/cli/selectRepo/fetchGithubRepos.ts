@@ -10,7 +10,7 @@ type PartialRepo = {
   private: boolean
 }
 
-type OptionsType = {
+export type OptionsType = {
   name: string,
   value: {
     html: string,
