@@ -14,6 +14,7 @@ TODO:
 - [ ] make back button
 - [ ] add ssh_url to gitClone options
 - [ ] open terminal based on OS -- process.platform === 'darwin' || 'linux' || 'win32'
+- [ ] add filtering to repo search
 - [x] remove github username from config file and ConfigManager
 - [x] implement device flow auth
 - [x] add functionality for worktrees "'--bare' repos" 

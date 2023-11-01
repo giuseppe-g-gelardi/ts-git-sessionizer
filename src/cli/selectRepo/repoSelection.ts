@@ -17,7 +17,7 @@ export async function repoSelection(token: string, cm: ConfigManager): Promise<v
     loop: true,
     choices: github_repos,
   })
-  const repoName = getRepoNameFromUrl(answer)
+  const repoName = getRepoNameFromUrl(answer.html)
 
   const bareRepo = await select({
     message: 'Clone as bare repository? If you are unsure, select "No"',
@@ -35,11 +35,28 @@ export async function repoSelection(token: string, cm: ConfigManager): Promise<v
     ]
   })
 
+  const htmlOrSsh = await select({
+    message: 'Clone via SSH or HTTPS?',
+    choices: [
+      {
+        name: 'HTTP',
+        value: 'http',
+        description: 'Clones the repository via HTTPS'
+      },
+      {
+        name: 'SSH',
+        value: 'ssh',
+        description: 'Clones the repository via SSH'
+      },
+    ]
+  })
+
+  const cloneUrl = htmlOrSsh === 'http' ? answer.html : answer.ssh
   const spinner = ora('Cloning repository...\n').start()
   const cfg = await cm.getConfig()
   try {
     spinner.succeed()
-    await gitClone(answer, bareRepo)
+    await gitClone(cloneUrl, bareRepo)
     spinner.succeed('Repository cloned successfully!')
 
     if (cfg.editor.name === 'neovim'

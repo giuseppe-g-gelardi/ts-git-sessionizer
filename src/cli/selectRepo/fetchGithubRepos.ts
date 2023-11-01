@@ -5,13 +5,17 @@ import ora from 'ora'
 type PartialRepo = {
   name: string,
   html_url: string,
+  ssh_url: string,
   description: string
   private: boolean
 }
 
 type OptionsType = {
   name: string,
-  value: string,
+  value: {
+    html: string,
+    ssh: string,
+  },
   description: string
 }
 
@@ -47,7 +51,10 @@ export async function fetchGithubRepos(token: string): Promise<Array<OptionsType
   spinner.succeed(`Fetched ${allRepos.length} repositories!`)
   return allRepos.map((r: PartialRepo) => ({
     name: r.name && `${r.name} -- ${r.private ? '(private)' : '(public)'}`,
-    value: r.html_url,
+    value: {
+      html: r.html_url,
+      ssh: r.ssh_url,
+    },
     description: r.description,
   }));
 }
