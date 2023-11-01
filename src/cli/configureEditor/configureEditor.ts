@@ -1,8 +1,11 @@
 
 import { ConfigManager } from "../../ConfigManager"
-import { configureEditorOptions, configureAliasOptions, configureTmuxOptions, initCli } from ".."
 
 import select, { Separator } from "@inquirer/select"
+import { configureEditorOptions } from "./editor_options";
+import { configureAliasOptions } from "./alias_options";
+import { configureTmuxOptions } from "./tmux_options";
+import { initCli } from "../initCli";
 
 export async function configureEditor(cm: ConfigManager): Promise<void> {
 
@@ -10,8 +13,8 @@ export async function configureEditor(cm: ConfigManager): Promise<void> {
   const alias = await configureAliasOptions(); new Separator();
   const tmux_answer = await configureTmuxOptions();
 
-  const cfg = cm.getConfig()
-  cm.writeConfig({
+  const cfg = await cm.getConfig()
+  await cm.writeConfig({
     ...cfg, editor: {
       ...cfg.editor,
       name: editor_answer,
@@ -57,7 +60,7 @@ async function confirmEditorOptions(
   }
 
 
-  const cfg = cm.getConfig()
+  const cfg = await cm.getConfig()
   await initCli(cfg, cm)
 }
 

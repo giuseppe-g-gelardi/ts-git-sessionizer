@@ -1,6 +1,6 @@
-import { rando } from '../../utils'
 
 import { select } from "@inquirer/prompts"
+import { rando } from "../../utils/rando"
 
 
 type EditorOptions = {

@@ -1,6 +1,8 @@
+import { exit } from "process"
 import { type UserConfig, ConfigManager } from "../ConfigManager"
-import { exit } from "../utils"
-import { welcomeDialog, repoSelection, configureEditor } from './'
+import { configureEditor } from "./configureEditor/configureEditor"
+import { repoSelection } from "./selectRepo/repoSelection"
+import { welcomeDialog } from "./welcomeDialog"
 
 export async function initCli(config: UserConfig, cm: ConfigManager) {
   console.clear()

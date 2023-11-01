@@ -1,7 +1,7 @@
 
 
 import { type ConfigManager } from '../../ConfigManager'
-import { getRepoNameFromUrl, fetchGithubRepos } from '.'
+import { getRepoNameFromUrl, fetchGithubRepos } from './fetchGithubRepos'
 
 import { spawn } from 'child_process'
 
@@ -79,7 +79,7 @@ async function cdIntoAndEdit(editor: string, repoName: string): Promise<void> {
   }, 1000)
 }
 
-async function gitClone(repo_url: string, isBare: boolean = false): Promise<void> {
+async function gitClone(repo_url: string, isBare = false): Promise<void> {
   let gitProcess = spawn('git', ['clone', repo_url])
   if (isBare) gitProcess = spawn('git', ['clone', '--bare', repo_url])
   return new Promise<void>((resolve, reject) => {
@@ -103,18 +103,10 @@ async function openCodeEditorPromise(editor: string): Promise<void> {
   let command: string;
 
   switch (editor) {
-    case 'neovim':
-      command = 'nvim .';
-      break;
-    case 'vim':
-      command = 'vim .'
-      break;
-    case 'vscode':
-      command = 'code .'
-      break;
-    default:
-      command = 'code .'
-      break;
+    case 'neovim': command = 'nvim .'; break;
+    case 'vim': command = 'vim .'; break;
+    case 'vscode': command = 'code .'; break;
+    default: command = 'code .'; break;
   }
 
   const terminal = spawn(command, { shell: true, stdio: 'inherit' });
@@ -142,8 +134,8 @@ async function startTmuxSession(sessionName: string): Promise<void> {
   await new Promise((resolve) => setTimeout(resolve, 1000));
 
   // Send keys to open nvim within the tmux session
-  // const nvimProcess = spawn(`tmux send-keys -t ${sessionName} 'nvim .' C-m`, { shell: true, stdio: 'inherit' });
-  const nvimProcess = spawn(`tmux send-keys -t _cli-test 'nvim .' C-m`, { shell: true, stdio: 'inherit' });
+  const nvimProcess = spawn(`tmux send-keys -t ${sessionName} 'nvim .' C-m`, { shell: true, stdio: 'inherit' });
+  // const nvimProcess = spawn(`tmux send-keys -t _cli-test 'nvim .' C-m`, { shell: true, stdio: 'inherit' });
   nvimProcess.on('error', (error) => console.error(`Error: ${error}`));
 
   return new Promise<void>((resolve, reject) => {

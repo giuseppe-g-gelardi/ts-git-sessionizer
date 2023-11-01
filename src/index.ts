@@ -1,6 +1,7 @@
 import { ConfigManager } from "./ConfigManager";
-import { authenticate } from "./auth";
-import { initCli } from './cli'
+import { authenticate } from "./auth/authenticate";
+import { initCli } from "./cli/initCli";
+
 
 (async function main() {
   const cm = new ConfigManager()

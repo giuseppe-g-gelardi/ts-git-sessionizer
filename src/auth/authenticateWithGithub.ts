@@ -1,7 +1,8 @@
 import { ConfigManager, UserConfig } from "../ConfigManager";
 import { createOAuthDeviceAuth } from '@octokit/auth-oauth-device';
-import { openBrowser } from "../utils";
+
 import dotenv from 'dotenv'
+import { openBrowser } from "../utils/openBrowser";
 
 export async function authenticateWithGithub(cm: ConfigManager): Promise<void> {
   try {

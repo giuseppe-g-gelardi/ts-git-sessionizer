@@ -1,8 +1,8 @@
 
 
 import { ConfigManager, type UserConfig } from "../ConfigManager";
-import { authenticateWithGithub } from ".";
-import { initCli } from "../cli";
+import { initCli } from "../cli/initCli";
+import { authenticateWithGithub } from "./authenticateWithGithub";
 
 export async function authenticate(config: UserConfig, cm: ConfigManager): Promise<void> {
   if (config.user_profile.access_token === "") {
