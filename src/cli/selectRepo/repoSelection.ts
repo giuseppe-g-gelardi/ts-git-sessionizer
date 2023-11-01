@@ -126,15 +126,16 @@ async function startTmuxAndNvim(repoName: string): Promise<void> {
 }
 
 async function startTmuxSession(sessionName: string): Promise<void> {
+  const session = sessionName.replace('.', '_').toLowerCase();
   // Start the tmux session
-  const tmuxProcess = spawn(`tmux new -s ${sessionName}`, { shell: true, stdio: 'inherit' });
+  const tmuxProcess = spawn(`tmux new -s ${session}`, { shell: true, stdio: 'inherit' });
   tmuxProcess.on('error', (error) => console.error(`Error: ${error}`));
 
   // Wait for a moment to allow the tmux session to initialize
   await new Promise((resolve) => setTimeout(resolve, 1000));
 
   // Send keys to open nvim within the tmux session
-  const nvimProcess = spawn(`tmux send-keys -t ${sessionName} 'nvim .' C-m`, { shell: true, stdio: 'inherit' });
+  const nvimProcess = spawn(`tmux send-keys -t ${session} 'nvim .' C-m`, { shell: true, stdio: 'inherit' });
   // const nvimProcess = spawn(`tmux send-keys -t _cli-test 'nvim .' C-m`, { shell: true, stdio: 'inherit' });
   nvimProcess.on('error', (error) => console.error(`Error: ${error}`));
 

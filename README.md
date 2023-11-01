@@ -12,9 +12,11 @@ the application uses github authentication and some interactive prompts to {hope
 
 TODO: 
 - [ ] make back button
-- [x] implement device flow auth
 - [ ] add ssh_url to gitClone options
-- [ ] add functionality for worktrees "'--bare' repos" 
+- [ ] open terminal based on OS -- process.platform === 'darwin' || 'linux' || 'win32'
+- [ ] remove github username from config file and ConfigManager
+- [x] implement device flow auth
+- [x] add functionality for worktrees "'--bare' repos" 
 
 ## To get started:
 1. create a new oauth app in your gh developer settings 
@@ -22,6 +24,5 @@ TODO:
 2. `git clone https://github.com/giuseppe-g-gelardi/ts-git-sessionizer.git`
 3. cd ts-git-sessionizer
 4. pnpm install
-5. add your clientid to the .env file. 
 6. pnpm start
 

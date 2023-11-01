@@ -2,10 +2,6 @@ import { parse } from 'url'
 
 import ora from 'ora'
 
-import dotenv from 'dotenv'
-dotenv.config()
-
-
 type PartialRepo = {
   name: string,
   html_url: string,

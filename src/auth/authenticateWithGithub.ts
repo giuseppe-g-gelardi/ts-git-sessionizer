@@ -1,7 +1,6 @@
 import { ConfigManager, UserConfig } from "../ConfigManager";
 import { createOAuthDeviceAuth } from '@octokit/auth-oauth-device';
 
-import dotenv from 'dotenv'
 import { openBrowser } from "../utils/openBrowser";
 
 export async function authenticateWithGithub(cm: ConfigManager): Promise<void> {
@@ -13,7 +12,6 @@ export async function authenticateWithGithub(cm: ConfigManager): Promise<void> {
 }
 
 async function deviceFlowAuth(cm: ConfigManager): Promise<void> {
-  dotenv.config()
 
   const auth = createOAuthDeviceAuth({
     clientType: 'oauth-app',
