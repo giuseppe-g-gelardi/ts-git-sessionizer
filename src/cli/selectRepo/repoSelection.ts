@@ -8,6 +8,7 @@ import { spawn } from 'child_process'
 import ora from 'ora'
 import { select } from "@inquirer/prompts"
 
+
 export async function repoSelection(token: string, cm: ConfigManager): Promise<void> {
   const github_repos = await fetchGithubRepos(token)
   const answer = await select({
@@ -17,12 +18,28 @@ export async function repoSelection(token: string, cm: ConfigManager): Promise<v
     choices: github_repos,
   })
   const repoName = getRepoNameFromUrl(answer)
+
+  const bareRepo = await select({
+    message: 'Clone as bare repository? If you are unsure, select "No"',
+    choices: [
+      {
+        name: 'No (recommended)',
+        value: false,
+        description: 'Clones the repository as a normal repository'
+      },
+      {
+        name: 'Yes',
+        value: true,
+        description: 'Clones the repository as a bare repository -- great for worktrees and .dotfiles'
+      },
+    ]
+  })
+
   const spinner = ora('Cloning repository...\n').start()
   const cfg = await cm.getConfig()
-
   try {
     spinner.succeed()
-    await gitClone(answer)
+    await gitClone(answer, bareRepo)
     spinner.succeed('Repository cloned successfully!')
 
     if (cfg.editor.name === 'neovim'
@@ -62,8 +79,9 @@ async function cdIntoAndEdit(editor: string, repoName: string): Promise<void> {
   }, 1000)
 }
 
-async function gitClone(repo_url: string): Promise<void> {
-  const gitProcess = spawn('git', ['clone', repo_url])
+async function gitClone(repo_url: string, isBare: boolean = false): Promise<void> {
+  let gitProcess = spawn('git', ['clone', repo_url])
+  if (isBare) gitProcess = spawn('git', ['clone', '--bare', repo_url])
   return new Promise<void>((resolve, reject) => {
     gitProcess.on('close', (code) => code === 0 ? resolve() : reject(`Process exited with code ${code}`))
   })
@@ -80,7 +98,6 @@ async function changeWorkingDirectory(dir: string): Promise<void> {
     }
   })
 }
-
 
 async function openCodeEditorPromise(editor: string): Promise<void> {
   let command: string;
