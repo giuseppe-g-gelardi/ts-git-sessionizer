@@ -1,9 +1,5 @@
 import * as fs from 'fs';
 
-type UserProfile = {
-  access_token: string;
-};
-
 export type Editor = {
   name: string; // "vscode" | "vim" | "nvim";
   alias: string | boolean;
@@ -11,7 +7,7 @@ export type Editor = {
 };
 
 export interface UserConfig {
-  user_profile: UserProfile;
+  access_token: string;
   editor: Editor;
   dependencies: boolean;
 }
@@ -21,7 +17,7 @@ export class ConfigManager {
   public defaultConfig: UserConfig;
 
   constructor(defaultConfig: UserConfig = {
-    user_profile: { access_token: "" },
+    access_token: "",
     editor: { name: "", alias: "", tmux: false },
     dependencies: false, 
   }) {
@@ -59,7 +55,7 @@ export class ConfigManager {
   async revalidateConfig() {
     setTimeout(async () => {
       const updatedConfig = await this.getConfig();
-      if (updatedConfig.user_profile.access_token === "") {
+      if (updatedConfig.access_token === "") {
         this.getConfig(); throw new Error('Unable to update or verify config');
       }
     }, 2000);

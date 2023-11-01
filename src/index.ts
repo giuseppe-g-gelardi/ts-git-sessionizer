@@ -7,7 +7,7 @@ import { initCli } from "./cli/initCli";
   const cm = new ConfigManager()
   const config = await cm.getConfig()
 
-  if (config.user_profile.access_token === "") {
+  if (config.access_token === "") {
     await authenticate(config, cm)
   }
 

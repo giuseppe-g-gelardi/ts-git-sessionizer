@@ -16,7 +16,7 @@ async function deviceFlowAuth(cm: ConfigManager): Promise<void> {
   const auth = createOAuthDeviceAuth({
     clientType: 'oauth-app',
     clientId: "93cd064567f35e7d6d27",
-    scopes: ["repo"], // "read:user"
+    scopes: ["repo"],
     onVerification(verification) {
       console.info('Press enter to authenticate with GitHub')
       console.log('Enter code %s', verification.user_code)
@@ -34,16 +34,9 @@ async function deviceFlowAuth(cm: ConfigManager): Promise<void> {
     }
   })
 
-  const tokenAuthentication = await auth({ type: 'oauth', });
-
+  const authToken = await auth({ type: 'oauth', });
   const cfg = await cm.getConfig()
-  await cm.writeConfig({
-    ...cfg, user_profile: {
-      ...cfg.user_profile,
-      access_token: tokenAuthentication.token
-    }
-  } as UserConfig)
-
+  await cm.writeConfig({ ...cfg, access_token: authToken.token } as UserConfig)
   console.info('Successfully authenticated with GitHub')
 }
 
