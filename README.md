@@ -14,7 +14,7 @@ the application uses github authentication and some interactive prompts to...
  - and finally, open the repo in your preferred editor (vscode, vim, or neovim)
 
 TODO: 
-- [ ] add filtering to repo search
+- [ ] add filtering to repo search -- ERR_REQUIRE_ESM. probably figure it out in the go version
 - [ ] make back button
 - [ ] open terminal based on OS -- process.platform === 'darwin' || 'linux' || 'win32'
 - [ ] if there is error cloning a repo, try again. but only like 3 times 
