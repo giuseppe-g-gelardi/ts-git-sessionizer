@@ -2,18 +2,4 @@
 
 /dist
 
-# env files
-.env
-.env.*
-
-!.env.example
-
 .configrc
-
-/src/*.json
-
-.deprecated
-NOTES.md
-
-# test repo
-.cli-test

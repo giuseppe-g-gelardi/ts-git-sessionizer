@@ -14,7 +14,7 @@ TODO:
 - [ ] make back button
 - [ ] add ssh_url to gitClone options
 - [ ] open terminal based on OS -- process.platform === 'darwin' || 'linux' || 'win32'
-- [ ] remove github username from config file and ConfigManager
+- [x] remove github username from config file and ConfigManager
 - [x] implement device flow auth
 - [x] add functionality for worktrees "'--bare' repos" 
 
@@ -25,4 +25,3 @@ TODO:
 3. cd ts-git-sessionizer
 4. pnpm install
 6. pnpm start
-
