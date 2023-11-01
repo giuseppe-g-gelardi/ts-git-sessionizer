@@ -16,15 +16,12 @@ TODO:
 - [ ] add ssh_url to gitClone options
 - [ ] add functionality for worktrees "'--bare' repos" 
 
-
 ## To get started:
 1. create a new oauth app in your gh developer settings 
- - homepage url: http://localhost:{port} 
- - auth callback url: http://localhost:{port}/auth/callback
- - make sure to save the client id and generate a client secret, you will need that soon
+ - make sure to enable device flow -> - [x] Enable Device Flow
 2. `git clone https://github.com/giuseppe-g-gelardi/ts-git-sessionizer.git`
 3. cd ts-git-sessionizer
 4. pnpm install
-5. add your clientid, client secret and your preferred port to the .env file. 
- - a .env.example file is included. 
+5. add your clientid to the .env file. 
 6. pnpm start
+
