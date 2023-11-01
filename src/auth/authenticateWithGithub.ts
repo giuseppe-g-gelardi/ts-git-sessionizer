@@ -37,8 +37,8 @@ async function deviceFlowAuth(cm: ConfigManager): Promise<void> {
 
   const tokenAuthentication = await auth({ type: 'oauth', });
 
-  const cfg = cm.getConfig()
-  cm.writeConfig({
+  const cfg = await cm.getConfig()
+  await cm.writeConfig({
     ...cfg, user_profile: {
       ...cfg.user_profile,
       access_token: tokenAuthentication.token
