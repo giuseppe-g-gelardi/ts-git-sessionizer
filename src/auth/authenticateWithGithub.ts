@@ -16,7 +16,7 @@ async function deviceFlowAuth(cm: ConfigManager): Promise<void> {
 
   const auth = createOAuthDeviceAuth({
     clientType: 'oauth-app',
-    clientId: process.env.CLIENT_ID as string,
+    clientId: "93cd064567f35e7d6d27",
     scopes: ["repo"], // "read:user"
     onVerification(verification) {
       console.info('Press enter to authenticate with GitHub')
