@@ -33,7 +33,7 @@ export async function isBareRepoPrompt(): Promise<boolean> {
 
 export async function cloneViaSshOrHttp(): Promise<string> {
   const answer = await select({
-    message: 'Clone via SSH or HTTP?',
+    message: 'Clone via SSH or HTTP? If you are unsure, select "HTTP"',
     choices: [
       {
         name: 'HTTP',
@@ -43,7 +43,7 @@ export async function cloneViaSshOrHttp(): Promise<string> {
       {
         name: 'SSH',
         value: 'ssh',
-        description: 'Clones the repository via SSH'
+        description: 'Clones the repository via SSH -- requires an SSH key to be added to your GitHub account'
       },
     ]
   })
