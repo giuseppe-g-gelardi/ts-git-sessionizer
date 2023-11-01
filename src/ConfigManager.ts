@@ -2,7 +2,6 @@ import * as fs from 'fs';
 
 type UserProfile = {
   access_token: string;
-  github_username: string;
 };
 
 export type Editor = {
@@ -17,22 +16,14 @@ export interface UserConfig {
   dependencies: boolean;
 }
 
-
 export class ConfigManager {
   private configFileName = '.configrc';
   public defaultConfig: UserConfig;
 
   constructor(defaultConfig: UserConfig = {
-    user_profile: {
-      access_token: "",
-      github_username: "",
-    },
-    editor: {
-      name: "",
-      alias: "",
-      tmux: false,
-    },
-    dependencies: false,
+    user_profile: { access_token: "" },
+    editor: { name: "", alias: "", tmux: false },
+    dependencies: false, 
   }) {
     this.defaultConfig = defaultConfig;
   }
