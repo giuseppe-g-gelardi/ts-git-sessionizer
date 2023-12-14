@@ -28,4 +28,3 @@ export async function configureTmuxOptions() {
   return tmux_answer
 }
 
-
